@@ -1,0 +1,26 @@
+name: Discord Notify
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post to Discord
+        env:
+          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          ACTOR:   ${{ github.actor }}
+          SHA:     ${{ github.sha }}
+          MSG:     ${{ github.event.head_commit.message }}
+          BRANCH:  ${{ github.ref_name }}
+          REPO:    ${{ github.repository }}
+        run: |
+          SHORT_SHA="${SHA::7}"
+          CONTENT="📌 **$REPO** Push to **$BRANCH** by **$ACTOR** \`${SHORT_SHA}\`: $MSG 🔗 https://github.com/$REPO/commit/$SHA"
+
+          curl -sS -X POST "$WEBHOOK?wait=true" \
+            -H "Content-Type: application/json" \
+            -d "$(jq -n --arg content "$CONTENT" '{content: $content}')"
