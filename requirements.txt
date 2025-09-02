@@ -1,0 +1,4 @@
+opencv-python>=4.5.0
+pytesseract>=0.3.10
+# For select_text_images.py, you also need Tesseract OCR installed on your system:
+# sudo apt-get
